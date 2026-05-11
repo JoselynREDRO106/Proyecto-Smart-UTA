@@ -2,7 +2,17 @@ const SMARTCAMPUS_API_BASE_URL = window.API_BASE_URL || "http://localhost:8080/S
 
 const authHeaders = () => {
   const token = localStorage.getItem("token");
-  return token ? { Authorization: `Bearer ${token}` } : {};
+  const rawUser = localStorage.getItem("usuario");
+  let role = "";
+  try {
+    role = rawUser ? String(JSON.parse(rawUser).rol_id || "") : "";
+  } catch {
+    role = "";
+  }
+  return {
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...(role ? { "X-User-Role": role } : {})
+  };
 };
 
 const jsonHeaders = () => ({ ...authHeaders(), "Content-Type": "application/json" });
@@ -15,19 +25,23 @@ const listarUsuarios = () => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/auth/usuario
 const obtenerUsuario = (id) => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/auth/usuarios/${id}`, { headers: authHeaders() });
 const actualizarUsuario = (id, data) => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/auth/usuarios/${id}`, { method: "PUT", body: JSON.stringify(data), headers: jsonHeaders() });
 const eliminarUsuario = (id) => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/auth/usuarios/${id}`, { method: "DELETE", headers: authHeaders() });
+const crearEmpleado = (data) => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/auth/empleados`, { method: "POST", body: JSON.stringify(data), headers: jsonHeaders() });
 
 // ========== TRAMITES ==========
 const crearTramite = (data) => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/tramites`, { method: "POST", body: JSON.stringify(data), headers: jsonHeaders() });
-const obtenerHistorialTramites = () => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/tramites/historial`, { headers: authHeaders() });
+const obtenerHistorialTramites = (tramiteId) => {
+  const query = tramiteId ? `?tramiteId=${encodeURIComponent(tramiteId)}` : "";
+  return fetch(`${SMARTCAMPUS_API_BASE_URL}/api/tramites/historial${query}`, { headers: authHeaders() });
+};
 const consultarEstadoTramite = (tramiteId) => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/tramites/estado?tramiteId=${tramiteId}`, { headers: authHeaders() });
 const deshacerUltimaAccion = () => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/tramites/deshacer`, { method: "POST", headers: authHeaders() });
 const listarTiposTramite = () => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/tramites/tipo`, { headers: authHeaders() });
 const cambiarEstadoTramite = (id, estado) => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/tramites/${id}/estado`, { method: "PUT", body: JSON.stringify({ estado }), headers: jsonHeaders() });
 
 // ========== TURNOS ==========
-const solicitarTurno = (data) => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/turnos/solicitar`, { method: "POST", body: JSON.stringify(data), headers: jsonHeaders() });
+const solicitarTurno = (data) => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/turnos`, { method: "POST", body: JSON.stringify(data), headers: jsonHeaders() });
 const consultarEstadoTurno = (turnoId) => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/turnos/estado?turnoId=${turnoId}`, { headers: authHeaders() });
-const obtenerTurnosUsuario = () => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/turnos/usuario`, { headers: authHeaders() });
+const obtenerTurnosUsuario = () => Promise.resolve(new Response(JSON.stringify([]), { status: 200, headers: { "Content-Type": "application/json" } }));
 const atenderSiguienteTurno = () => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/turnos/atender`, { method: "POST", headers: authHeaders() });
 const obtenerSiguienteTurno = () => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/turnos/siguiente`, { headers: authHeaders() });
 const cancelarTurno = (turnoId) => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/turnos/cancelar?turnoId=${turnoId}`, { method: "DELETE", headers: authHeaders() });
@@ -40,9 +54,9 @@ const actualizarNodoDocumento = (id, data) => fetch(`${SMARTCAMPUS_API_BASE_URL}
 const eliminarNodoDocumento = (id) => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/documentos/nodo/${id}`, { method: "DELETE", headers: authHeaders() });
 
 // ========== RUTAS (GRAFO) ==========
-const calcularRuta = (origen, destino) => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/rutas/calcular`, { method: "POST", body: JSON.stringify({ origen, destino }), headers: jsonHeaders() });
-const listarNodosRutas = () => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/rutas/nodos`, { headers: authHeaders() });
-const listarConexionesRutas = () => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/rutas/conexiones`, { headers: authHeaders() });
+const calcularRuta = (origen, destino) => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/rutas/calcular?origen=${encodeURIComponent(origen)}&destino=${encodeURIComponent(destino)}`, { headers: authHeaders() });
+const listarNodosRutas = () => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/rutas/puntos`, { headers: authHeaders() });
+const listarConexionesRutas = () => Promise.resolve(new Response(JSON.stringify([]), { status: 200, headers: { "Content-Type": "application/json" } }));
 
 // ========== REPORTES ==========
 const reporteTurnosAtendidos = () => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/reportes/turnos-atendidos`, { headers: authHeaders() });
@@ -64,6 +78,7 @@ window.SmartCampusAPI = {
   obtenerUsuario,
   actualizarUsuario,
   eliminarUsuario,
+  crearEmpleado,
   crearTramite,
   obtenerHistorialTramites,
   consultarEstadoTramite,

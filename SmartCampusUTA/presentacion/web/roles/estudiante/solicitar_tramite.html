@@ -19,7 +19,18 @@
       <section class="content-panel">
         <form id="tramite-form">
           <label class="form-label" for="tipoTramiteId">Tipo de tramite</label>
-          <select class="form-select mb-3" id="tipoTramiteId" name="tipoTramiteId" required></select>
+          <select class="form-select mb-3" id="tipoTramiteId" name="tipoTramiteId" required>
+            <option value="1">Justificacion de faltas</option>
+            <option value="2">Solicitud certificado de asistencia a clases</option>
+            <option value="3">Solicitud copia certificada de titulo profesional</option>
+            <option value="4">Solicitud de acta de grado</option>
+            <option value="5">Solicitud de aprobacion de informe de practicas pre profesionales</option>
+            <option value="6">Solicitud de aprobacion del pensum de estudio</option>
+            <option value="7">Solicitud de autorizacion de practicas pre profesionales</option>
+            <option value="8">Solicitud de cambio de carrera</option>
+            <option value="9">Solicitud de certificado de estudios</option>
+            <option value="10">Solicitud de certificados de no adeudar</option>
+          </select>
           <label class="form-label" for="descripcion">Descripcion</label>
           <textarea class="form-control mb-3" id="descripcion" rows="4" name="descripcion" required></textarea>
           <label class="form-label" for="prioridad">Prioridad</label>
@@ -44,16 +55,6 @@
   <script src="../../assets/js/componentes/navbar.js"></script>
   <script src="../../assets/js/componentes/footer.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", async () => {
-      const select = document.querySelector("#tipoTramiteId");
-      try {
-        const tipos = await SmartCampusAPI.parseJson(await SmartCampusAPI.listarTiposTramite());
-        select.innerHTML = (Array.isArray(tipos) ? tipos : []).map((tipo) => `<option value="${tipo.id}">${tipo.nombre}</option>`).join("");
-      } catch (error) {
-        SmartCampusUtils.showAlert("#tramite-alert", error.message, "danger");
-      }
-    });
-
     document.querySelector("#tramite-form").addEventListener("submit", async (event) => {
       event.preventDefault();
       const session = SmartCampusAuth.requireSession();

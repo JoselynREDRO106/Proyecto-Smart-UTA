@@ -12,31 +12,12 @@ window.SmartCampusGrafo = {
     ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
 
     try {
-      const [nodosData, conexionesData] = await Promise.all([
-        window.SmartCampusAPI.parseJson(await window.SmartCampusAPI.listarNodosRutas()),
-        window.SmartCampusAPI.parseJson(await window.SmartCampusAPI.listarConexionesRutas())
-      ]);
-      const nodos = this.layout(Array.isArray(nodosData) ? nodosData : nodosData.nodos || [], width, height);
-      const conexiones = Array.isArray(conexionesData) ? conexionesData : conexionesData.conexiones || [];
+      const puntosData = await window.SmartCampusAPI.parseJson(await window.SmartCampusAPI.listarNodosRutas());
+      const nodos = this.layout(Array.isArray(puntosData) ? puntosData : puntosData.nodos || [], width, height);
       const resaltado = Array.isArray(camino) ? camino.map((p) => p.id ?? p) : [];
 
       ctx.clearRect(0, 0, width, height);
-      ctx.lineWidth = 2;
-      conexiones.forEach((conexion) => {
-        const origen = nodos.find((n) => n.id === (conexion.origenId ?? conexion.origen ?? conexion.punto_origen_id));
-        const destino = nodos.find((n) => n.id === (conexion.destinoId ?? conexion.destino ?? conexion.punto_destino_id));
-        if (!origen || !destino) return;
-        ctx.strokeStyle = "#d9e2ec";
-        ctx.beginPath();
-        ctx.moveTo(origen.x, origen.y);
-        ctx.lineTo(destino.x, destino.y);
-        ctx.stroke();
-        if (conexion.distanciaMetros || conexion.distancia_metros) {
-          ctx.fillStyle = "#667085";
-          ctx.font = "600 12px Inter";
-          ctx.fillText(`${conexion.distanciaMetros || conexion.distancia_metros}m`, (origen.x + destino.x) / 2, (origen.y + destino.y) / 2);
-        }
-      });
+      this.drawFallbackEdges(ctx, nodos);
 
       if (resaltado.length > 1) {
         ctx.strokeStyle = "#e87a2a";
@@ -57,13 +38,23 @@ window.SmartCampusGrafo = {
         ctx.fill();
         ctx.fillStyle = "#17212b";
         ctx.font = "600 13px Inter";
-        ctx.fillText(punto.nombre || punto.label || `Nodo ${punto.id}`, punto.x + 18, punto.y + 4);
+        ctx.fillText(punto.nombre || punto.label || `Punto ${punto.id}`, punto.x + 18, punto.y + 4);
       });
     } catch (error) {
       ctx.clearRect(0, 0, width, height);
       ctx.fillStyle = "#842029";
       ctx.font = "600 14px Inter";
       ctx.fillText(error.message, 20, 40);
+    }
+  },
+  drawFallbackEdges(ctx, nodos) {
+    ctx.strokeStyle = "#d9e2ec";
+    ctx.lineWidth = 2;
+    for (let i = 1; i < nodos.length; i += 1) {
+      ctx.beginPath();
+      ctx.moveTo(nodos[i - 1].x, nodos[i - 1].y);
+      ctx.lineTo(nodos[i].x, nodos[i].y);
+      ctx.stroke();
     }
   },
   layout(nodos, width, height) {

@@ -12,7 +12,7 @@
     <section class="auth-card">
       <a class="d-flex align-items-center gap-2 mb-4" href="index.html"><span class="brand-mark">SC</span><strong>SmartCampusUTA</strong></a>
       <h1 class="h3">Crear cuenta</h1>
-      <p class="text-muted">El administrador se crea desde backend. Aqui se registran estudiantes o empleados autorizados.</p>
+      <p class="text-muted">Registro publico exclusivo para estudiantes. Las cuentas de empleados las crea un administrador.</p>
       <div id="register-alert"></div>
       <form data-register-form>
         <div class="mb-3"><label class="form-label">Nombre completo</label><input class="form-control" name="nombre" required></div>
@@ -21,7 +21,7 @@
           <div class="col-md-6"><label class="form-label">Telefono</label><input class="form-control" name="telefono"></div>
           <div class="col-md-6"><label class="form-label">Carrera</label><input class="form-control" name="carrera" placeholder="Sistemas"></div>
         </div>
-        <div class="my-3"><label class="form-label">Rol solicitado</label><select class="form-select" name="rolId"><option value="3">Estudiante</option><option value="2">Empleado autorizado</option></select></div>
+        <input type="hidden" name="rolId" value="3">
         <div class="row g-3">
           <div class="col-md-6"><label class="form-label">Contrasena</label><input class="form-control" name="password" type="password" required></div>
           <div class="col-md-6"><label class="form-label">Confirmar contrasena</label><input class="form-control" name="confirmar" type="password" required></div>

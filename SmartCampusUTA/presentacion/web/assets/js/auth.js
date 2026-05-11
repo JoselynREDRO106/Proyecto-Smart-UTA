@@ -85,7 +85,9 @@ document.addEventListener("submit", async (event) => {
       nombre: data.nombre,
       email: data.email,
       password: data.password,
-      rolId: Number(data.rolId || data.rol_id || 3)
+      rolId: 3,
+      telefono: data.telefono,
+      carrera: data.carrera
     }));
     window.SmartCampusUtils.showAlert(alertTarget, "Registro exitoso. Ya puedes iniciar sesion.", "success");
     setTimeout(() => { window.location.href = "login.html"; }, 900);
@@ -99,4 +101,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const protectedArea = !publicTurnQueue && ["/roles/", "/tramites/", "/turnos/", "/documentos/", "/rutas/"]
     .some((segment) => window.location.pathname.includes(segment));
   if (protectedArea) window.SmartCampusAuth.requireSession();
+  const session = window.SmartCampusAuth.getSession();
+  const path = window.location.pathname;
+  if (session && path.includes("/roles/administrador/") && session.usuario.rol_id !== 1) {
+    window.location.href = window.SmartCampusAuth.pathToRoot() + "dashboard.html";
+  }
+  if (session && path.includes("/roles/empleado/") && session.usuario.rol_id !== 2) {
+    window.location.href = window.SmartCampusAuth.pathToRoot() + "dashboard.html";
+  }
+  if (session && path.includes("/roles/estudiante/") && session.usuario.rol_id !== 3) {
+    window.location.href = window.SmartCampusAuth.pathToRoot() + "dashboard.html";
+  }
 });

@@ -43,6 +43,11 @@ public class SmartCampusController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             String path = path(req);
+            if ("/auth/usuarios".equals(path)) {
+                exigirRol(req, 1);
+                escribirJson(resp, authService.listarUsuarios());
+                return;
+            }
             if ("/rutas/puntos".equals(path)) {
                 escribirJson(resp, toList(rutasService.puntos()));
                 return;
@@ -76,7 +81,14 @@ public class SmartCampusController extends HttpServlet {
             Map<String, Object> body = leerBody(req);
             switch (path) {
                 case "/auth/registro" -> {
-                    Usuario usuario = authService.registrar(texto(body, "nombre"), texto(body, "email"), texto(body, "password"), entero(body, "rolId"));
+                    Usuario usuario = authService.registrarEstudiante(texto(body, "nombre"), texto(body, "email"), texto(body, "password"),
+                            texto(body, "telefono"), texto(body, "carrera"));
+                    escribirJson(resp, usuario);
+                }
+                case "/auth/empleados" -> {
+                    exigirRol(req, 1);
+                    Usuario usuario = authService.crearEmpleado(texto(body, "nombre"), texto(body, "email"), texto(body, "password"),
+                            texto(body, "telefono"), texto(body, "departamento"), texto(body, "cargo"));
                     escribirJson(resp, usuario);
                 }
                 case "/auth/login" -> {
@@ -117,6 +129,13 @@ public class SmartCampusController extends HttpServlet {
         return info == null ? "/" : info;
     }
 
+    private void exigirRol(HttpServletRequest req, int rolId) {
+        String header = req.getHeader("X-User-Role");
+        if (header == null || !header.equals(String.valueOf(rolId))) {
+            throw new SecurityException("No autorizado para esta operacion");
+        }
+    }
+
     private Map<String, Object> leerBody(HttpServletRequest req) throws IOException {
         if (req.getContentLength() == 0) {
             return Map.of();
@@ -136,7 +155,7 @@ public class SmartCampusController extends HttpServlet {
     }
 
     private void manejarError(HttpServletResponse resp, Exception ex) throws IOException {
-        int status = ex instanceof IllegalArgumentException ? 400 : ex instanceof SQLException ? 503 : 500;
+        int status = ex instanceof SecurityException ? 403 : ex instanceof IllegalArgumentException ? 400 : ex instanceof SQLException ? 503 : 500;
         error(resp, status, ex.getMessage());
     }
 

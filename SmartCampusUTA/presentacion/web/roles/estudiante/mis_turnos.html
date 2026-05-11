@@ -14,14 +14,11 @@
     <main class="container py-4">
       <div class="page-header">
         <h1>Mis turnos</h1>
-        <p class="text-muted">Turnos del usuario actual y estado en la cola FIFO.</p>
+        <p class="text-muted">Solicita un tramite para generar un turno en la cola FIFO.</p>
       </div>
       <section class="content-panel">
         <div data-cola></div>
-        <form class="row g-2 mt-3" id="cancel-form">
-          <div class="col-md-8"><input class="form-control" name="turnoId" type="number" min="1" placeholder="ID de turno a cancelar" required></div>
-          <div class="col-md-4"><button class="btn btn-outline-danger w-100">Cancelar turno</button></div>
-        </form>
+        <a class="btn btn-primary mt-3" href="solicitar_tramite.html">Solicitar tramite y turno</a>
         <div id="turnos-alert" class="mt-3"></div>
       </section>
     </main>
@@ -38,26 +35,10 @@
   <script>
     async function cargarTurnos() {
       const target = document.querySelector("[data-cola]");
-      target.innerHTML = SmartCampusUtils.loading("Cargando turnos...");
-      try {
-        const turnos = await SmartCampusAPI.parseJson(await SmartCampusAPI.obtenerTurnosUsuario());
-        SmartCampusCola.render(target, Array.isArray(turnos) ? turnos : [turnos].filter(Boolean));
-      } catch (error) {
-        SmartCampusUtils.showAlert(target, error.message, "danger");
-      }
+      target.innerHTML = `<p class="text-muted mb-0">El backend actual no expone un endpoint para listar los turnos del usuario. El turno se crea al enviar un tramite y se atiende desde la cola FIFO.</p>`;
     }
 
     document.addEventListener("DOMContentLoaded", cargarTurnos);
-    document.querySelector("#cancel-form").addEventListener("submit", async (event) => {
-      event.preventDefault();
-      try {
-        await SmartCampusAPI.parseJson(await SmartCampusAPI.cancelarTurno(new FormData(event.target).get("turnoId")));
-        SmartCampusUtils.showAlert("#turnos-alert", "Turno cancelado.", "success");
-        cargarTurnos();
-      } catch (error) {
-        SmartCampusUtils.showAlert("#turnos-alert", error.message, "danger");
-      }
-    });
   </script>
 </body>
 </html>
