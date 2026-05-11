@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login SmartCampus - UTA</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<form action="ValidarLogin" method="POST">
+    <h2>SmartCampus<span>UTA</span></h2>
+    <p class="subtitle">Gestión Académica Universitaria</p>
+
+    <input type="email" name="email" placeholder="Correo Institucional" required>
+
+    <input type="password" name="password" placeholder="Contraseña" required>
+
+    <button type="submit" class="btn">Ingresar</button>
+
+    <p class="footer-text">¿Nuevo en el SmartCSampus? <a href="registro.html">Crea una cuenta</a></p>
+</form>
+
+<script>
+    // Este script detecta si el Servlet ValidarLogin nos mandó de vuelta por error
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('error') === '1') {
+        alert("Acceso denegado: El correo o la contraseña no coinciden con nuestros registros.");
+    }
+</script>
+
+</body>
+</html>

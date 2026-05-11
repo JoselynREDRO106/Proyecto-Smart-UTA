@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro SmartCampus</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<form action="RegistrarUsuario" method="POST">
+    <h2>Registro de Usuario <span>(UTA)</span></h2>
+    <p class="subtitle">Conectando a base de datos grupal...</p>
+
+    <input type="text" name="nombre" placeholder="Nombre completo" required>
+    <input type="email" name="email" placeholder="Correo institucional" required>
+    <input type="password" name="password" placeholder="Contraseña" required>
+
+    <button type="submit" class="btn">Registrar en BD</button>
+
+    <p class="footer-text">¿Ya tienes cuenta? <a href="index.html">Inicia sesión</a></p>
+</form>
+
+</body>
+</html>
