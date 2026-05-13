@@ -46,6 +46,14 @@ public class TramiteService {
         return tramiteDAO.historial(tramiteId);
     }
 
+    public java.util.List<Tramite> listarTramites() throws SQLException {
+        return tramiteDAO.listarTodos();
+    }
+
+    public String obtenerEstado(int tramiteId) throws SQLException {
+        return tramiteDAO.obtenerEstado(tramiteId);
+    }
+
     public ListaDoble<HistorialTramite> expedienteNavegable(int tramiteId) throws SQLException {
         ListaSimple<HistorialTramite> historial = tramiteDAO.historial(tramiteId);
         ListaDoble<HistorialTramite> expediente = new ListaDoble<>();

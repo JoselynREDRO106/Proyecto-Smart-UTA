@@ -3,8 +3,8 @@
 
 INSERT INTO Rol (id, nombre, descripcion) VALUES
     (1, 'ADMIN', 'Administrador del sistema'),
-    (2, 'ESTUDIANTE', 'Usuario estudiante'),
-    (3, 'DOCENTE', 'Usuario docente')
+    (2, 'EMPLEADO', 'Usuario empleado'),
+    (3, 'ESTUDIANTE', 'Usuario estudiante')
 ON CONFLICT (id) DO UPDATE
 SET nombre = EXCLUDED.nombre,
     descripcion = EXCLUDED.descripcion;
@@ -13,7 +13,7 @@ SELECT setval('rol_id_seq', GREATEST((SELECT MAX(id) FROM Rol), 3));
 
 INSERT INTO Persona (id, nombre, cedula, telefono, direccion) VALUES
     (1, 'Estudiante Demo', '1800000001', '0999999999', 'Ambato'),
-    (2, 'Docente Demo', '1800000002', '0999999998', 'Ambato')
+    (2, 'Empleado Demo', '1800000002', '0999999998', 'Ambato')
 ON CONFLICT (id) DO NOTHING;
 
 SELECT setval('persona_id_seq', GREATEST((SELECT MAX(id) FROM Persona), 2));
@@ -23,7 +23,7 @@ VALUES (1, 'Software', 3, 'UTA-001')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO Empleado (id, cargo, departamento)
-VALUES (2, 'Docente', 'Estructura de Datos')
+VALUES (2, 'Empleado', 'Atencion estudiantil')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO CategoriaTramite (id, nombre, descripcion)

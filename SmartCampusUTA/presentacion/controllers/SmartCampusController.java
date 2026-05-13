@@ -48,8 +48,28 @@ public class SmartCampusController extends HttpServlet {
                 escribirJson(resp, authService.listarUsuarios());
                 return;
             }
+            if ("/tramites".equals(path)) {
+                escribirJson(resp, tramiteService.listarTramites());
+                return;
+            }
             if ("/rutas/puntos".equals(path)) {
                 escribirJson(resp, toList(rutasService.puntos()));
+                return;
+            }
+            if ("/turnos/pendientes".equals(path)) {
+                escribirJson(resp, toList(atencionService.cargarColaPendiente()));
+                return;
+            }
+            if ("/reportes/turnos-atendidos".equals(path)) {
+                escribirJson(resp, Map.of("total", toList(atencionService.cargarColaPendiente()).size()));
+                return;
+            }
+            if ("/reportes/tramites-periodo".equals(path)) {
+                escribirJson(resp, Map.of("total", tramiteService.listarTramites().size()));
+                return;
+            }
+            if ("/reportes/usuarios-por-rol".equals(path)) {
+                escribirJson(resp, reporteUsuariosPorRol());
                 return;
             }
             if ("/rutas/calcular".equals(path)) {
@@ -66,6 +86,10 @@ public class SmartCampusController extends HttpServlet {
             if ("/tramites/historial".equals(path)) {
                 ListaSimple<HistorialTramite> historial = tramiteService.historialSimple(entero(req, "tramiteId"));
                 escribirJson(resp, toList(historial));
+                return;
+            }
+            if ("/tramites/estado".equals(path)) {
+                escribirJson(resp, Map.of("estado", tramiteService.obtenerEstado(entero(req, "tramiteId"))));
                 return;
             }
             error(resp, 404, "Ruta no encontrada");
@@ -99,6 +123,7 @@ public class SmartCampusController extends HttpServlet {
                         error(resp, 401, "Credenciales invalidas");
                     }
                 }
+                case "/auth/logout" -> escribirJson(resp, Map.of("ok", true));
                 case "/tramites" -> {
                     Tramite tramite = tramiteService.registrarTramite(entero(body, "tipoTramiteId"), entero(body, "estudianteId"),
                             texto(body, "descripcion"), texto(body, "prioridad"));
@@ -193,5 +218,18 @@ public class SmartCampusController extends HttpServlet {
         }
         dto.put("hijos", hijos);
         return dto;
+    }
+
+    private Map<String, Object> reporteUsuariosPorRol() throws SQLException {
+        Map<Integer, Integer> conteo = new LinkedHashMap<>();
+        for (Usuario usuario : authService.listarUsuarios()) {
+            conteo.merge(usuario.getRolId(), 1, Integer::sum);
+        }
+        return Map.of(
+                "administradores", conteo.getOrDefault(1, 0),
+                "empleados", conteo.getOrDefault(2, 0),
+                "estudiantes", conteo.getOrDefault(3, 0),
+                "totalUsuarios", conteo.values().stream().mapToInt(Integer::intValue).sum()
+        );
     }
 }

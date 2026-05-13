@@ -61,7 +61,7 @@ public class UsuarioDAO {
                     psEmpleado.executeUpdate();
                 }
 
-                psPersonaSeq.executeUpdate();
+                psPersonaSeq.executeQuery();
                 cn.commit();
             } catch (SQLException ex) {
                 cn.rollback();

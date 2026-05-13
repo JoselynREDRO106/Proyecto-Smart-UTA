@@ -63,6 +63,24 @@ public class TramiteDAO {
         }
     }
 
+    public java.util.List<Tramite> listarTodos() throws SQLException {
+        java.util.List<Tramite> tramites = new java.util.ArrayList<>();
+        String sql = """
+                SELECT id, codigo_unico, tipo_tramite_id, estudiante_id, empleado_id, descripcion,
+                       estado, prioridad, observaciones, fecha_solicitud
+                FROM Tramite
+                ORDER BY fecha_solicitud DESC, id DESC
+                """;
+        try (Connection cn = DatabaseConnection.getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                tramites.add(mapear(rs));
+            }
+        }
+        return tramites;
+    }
+
     public String obtenerEstado(int tramiteId) throws SQLException {
         try (Connection cn = DatabaseConnection.getConnection();
              PreparedStatement ps = cn.prepareStatement("SELECT estado FROM Tramite WHERE id = ?")) {
@@ -97,5 +115,24 @@ public class TramiteDAO {
             }
         }
         return lista;
+    }
+
+    private Tramite mapear(ResultSet rs) throws SQLException {
+        Tramite tramite = new Tramite();
+        tramite.setId(rs.getInt("id"));
+        tramite.setCodigoUnico(rs.getString("codigo_unico"));
+        tramite.setTipoTramiteId(rs.getInt("tipo_tramite_id"));
+        tramite.setEstudianteId(rs.getInt("estudiante_id"));
+        int empleadoId = rs.getInt("empleado_id");
+        tramite.setEmpleadoId(rs.wasNull() ? null : empleadoId);
+        tramite.setDescripcion(rs.getString("descripcion"));
+        tramite.setEstado(rs.getString("estado"));
+        tramite.setPrioridad(rs.getString("prioridad"));
+        tramite.setObservaciones(rs.getString("observaciones"));
+        java.sql.Timestamp fechaSolicitud = rs.getTimestamp("fecha_solicitud");
+        if (fechaSolicitud != null) {
+            tramite.setFechaSolicitud(fechaSolicitud.toLocalDateTime());
+        }
+        return tramite;
     }
 }

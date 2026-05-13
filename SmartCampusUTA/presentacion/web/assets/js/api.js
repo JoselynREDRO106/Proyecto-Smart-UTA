@@ -30,8 +30,8 @@ const crearEmpleado = (data) => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/auth/empl
 // ========== TRAMITES ==========
 const crearTramite = (data) => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/tramites`, { method: "POST", body: JSON.stringify(data), headers: jsonHeaders() });
 const obtenerHistorialTramites = (tramiteId) => {
-  const query = tramiteId ? `?tramiteId=${encodeURIComponent(tramiteId)}` : "";
-  return fetch(`${SMARTCAMPUS_API_BASE_URL}/api/tramites/historial${query}`, { headers: authHeaders() });
+  if (!tramiteId) return fetch(`${SMARTCAMPUS_API_BASE_URL}/api/tramites`, { headers: authHeaders() });
+  return fetch(`${SMARTCAMPUS_API_BASE_URL}/api/tramites/historial?tramiteId=${encodeURIComponent(tramiteId)}`, { headers: authHeaders() });
 };
 const consultarEstadoTramite = (tramiteId) => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/tramites/estado?tramiteId=${tramiteId}`, { headers: authHeaders() });
 const deshacerUltimaAccion = () => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/tramites/deshacer`, { method: "POST", headers: authHeaders() });
@@ -41,7 +41,7 @@ const cambiarEstadoTramite = (id, estado) => fetch(`${SMARTCAMPUS_API_BASE_URL}/
 // ========== TURNOS ==========
 const solicitarTurno = (data) => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/turnos`, { method: "POST", body: JSON.stringify(data), headers: jsonHeaders() });
 const consultarEstadoTurno = (turnoId) => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/turnos/estado?turnoId=${turnoId}`, { headers: authHeaders() });
-const obtenerTurnosUsuario = () => Promise.resolve(new Response(JSON.stringify([]), { status: 200, headers: { "Content-Type": "application/json" } }));
+const obtenerTurnosUsuario = () => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/turnos/pendientes`, { headers: authHeaders() });
 const atenderSiguienteTurno = () => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/turnos/atender`, { method: "POST", headers: authHeaders() });
 const obtenerSiguienteTurno = () => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/turnos/siguiente`, { headers: authHeaders() });
 const cancelarTurno = (turnoId) => fetch(`${SMARTCAMPUS_API_BASE_URL}/api/turnos/cancelar?turnoId=${turnoId}`, { method: "DELETE", headers: authHeaders() });

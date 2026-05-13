@@ -11,9 +11,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     ]);
 
     const cards = [
-      ["Turnos atendidos", turnos.total || turnos.cantidad || 0],
-      ["Tramites periodo", tramites.total || tramites.cantidad || 0],
-      ["Roles registrados", Array.isArray(usuarios) ? usuarios.length : usuarios.total || 0],
+      ["Turnos en cola", turnos.total || turnos.cantidad || 0],
+      ["Tramites registrados", tramites.total || tramites.cantidad || 0],
+      ["Empleados", usuarios.empleados || 0],
       ["Usuarios por rol", usuarios.totalUsuarios || usuarios.total || 0]
     ];
 
