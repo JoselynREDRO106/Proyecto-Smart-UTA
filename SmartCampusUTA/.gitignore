@@ -2,11 +2,15 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=java
 
 ### Java ###
+target/
+build/
+.idea/
 # Compiled class file
 *.class
 
 # Log file
 *.log
+.env
 
 # BlueJ files
 *.ctxt
